@@ -8,13 +8,14 @@ import com.redolf.rancard.exceptions.TransactionNotFoundException;
 import com.redolf.rancard.models.Transaction;
 import com.redolf.rancard.repositories.TransactionRepository;
 import jakarta.transaction.InvalidTransactionException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+import org.apache.catalina.mapper.Mapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.OngoingStubbing;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,32 +24,30 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = RancardApplication.class)
-class TransactionServiceImplTest {
+class TransactionServiceImplTest extends AbstractContainerBaseTest{
 
     @Autowired
     private TransactionServiceImpl serviceImpl;
 
-    @Autowired
-    public ModelMapper mapper;
 
 
     @MockBean
     public TransactionRepository repository;
+
+    @Autowired
+    public Validator validator;
+
+    @Autowired
+    public ModelMapper mapper;
 
     static List<Transaction> transactionStream;
     @BeforeAll
@@ -66,6 +65,15 @@ class TransactionServiceImplTest {
         ).toList();
     }
 
+    @AfterEach
+    void tearDown() {
+        System.out.println(MY_SQL_CONTAINER.getPassword());
+        System.out.println(MY_SQL_CONTAINER.getDatabaseName());
+        System.out.println(MY_SQL_CONTAINER.getExposedPorts());
+        System.out.println(MY_SQL_CONTAINER.getUsername());
+        System.out.println(MY_SQL_CONTAINER.getJdbcUrl());
+    }
+
     @Test
     void createTransactionWithValidDetails() {
         Transaction transaction = Transaction.builder()
@@ -80,56 +88,13 @@ class TransactionServiceImplTest {
         verify(repository, times(1)).save(any(Transaction.class));
     }
 
-//    @Test
-//    void createTransactionWithSomeNullFields() {
-//        Transaction transaction = Transaction.builder()
-//                .amount(0)
-//                .sender("")
-//                .receiver("John Snow")
-//                .transactionDate(new Date())
-//                .build();
-//        when(repository.save(any(Transaction.class))).thenReturn(transaction);
-//        assertThrows(InvalidTransactionException.class, () -> serviceImpl.createTransaction(mapper.map(transaction,TransactionRequest.class)));
-//        verify(repository, times(1)).save(any(Transaction.class));
-//    }
-//
-//    @Test
-//    void updateTransaction() {
-//        Transaction transaction = Transaction.builder()
-//                .id(45)
-//                .amount(50)
-//                .sender("Emilia")
-//                .receiver("John Snow")
-//                .transactionDate(new Date())
-//                .build();
-//        when(repository.findById(45)).thenReturn(Optional.of(transaction));
-//
-//        Transaction updatedTransaction = Transaction.builder()
-//                .id(45)
-//                .amount(46000)
-//                .sender("Emilia")
-//                .receiver("John Snow")
-//                .transactionDate(transaction.getTransactionDate())
-//                .build();
-//        when(repository.save(any(Transaction.class))).thenReturn(updatedTransaction);
-//
-//        TransactionResponse expectedResponse = TransactionResponse.builder()
-//                .id(45)
-//                .amount(46000)
-//                .sender("Emilia")
-//                .receiver("John Snow")
-//                .transactionDate(new Date())
-//                .build();
-//        when(mapTransaction(updatedTransaction)).thenReturn(expectedResponse);
-//
-//        TransactionResponse actualResponse = serviceImpl.updateTransaction(45, mapper.map(updatedTransaction,TransactionRequest.class));
-//
-//        verify(repository, times(1)).findById(45);
-//
-//        verify(repository, times(1)).save(any(Transaction.class));
-//
-//        assertNotNull(actualResponse);
-//    }
+    @Test
+    void createTransactionWithSomeNullFields() {
+    }
+
+    @Test
+    void updateTransaction() {
+    }
 
     @Test
     void updateTransactionWhenNotFound() {
