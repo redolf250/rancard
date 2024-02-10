@@ -21,7 +21,7 @@ services:
      ports:
          - "9091:8080"
      environment:
-          SPRING_DATABASE: jdbc:mysql://localhost:3307/transactions?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Africa%2FNairobi&useSSL=false;
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3307/transactions?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Africa%2FNairobi&useSSL=false;
           SPRING_DATASOURCE_USERNAME: redolf
      links:
         - mysql
