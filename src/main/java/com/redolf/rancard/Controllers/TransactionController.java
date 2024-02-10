@@ -42,7 +42,7 @@ public class TransactionController {
 
     @GetMapping("/transactions/off-set/{offSet}/page-size/{pageSize}")
     private ResponseEntity<?> getTransactionsWithOffSetAndPageSize(@PathVariable int offSet ,@PathVariable int pageSize){
-        final List<TransactionResponse> transactions = serviceImpl.getTransactionsWithAndOffSetPageSize(offSet,pageSize);
+        final List<TransactionResponse> transactions = serviceImpl.getTransactionsWithOffSetAndPageSize(offSet,pageSize);
         return new ResponseEntity<>(transactions, HttpStatus.OK);
     }
 

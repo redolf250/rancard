@@ -183,7 +183,7 @@ public class TransactionServiceImpl implements TransactionService<TransactionReq
      * return a list of {@link TransactionResponse} based on the parameters specified.
      */
     @SneakyThrows
-    public List<TransactionResponse> getTransactionsWithAndOffSetPageSize(int pageNumber, int pageSize) {
+    public List<TransactionResponse> getTransactionsWithOffSetAndPageSize(int pageNumber, int pageSize) {
         try {
             return repository.findAll(PageRequest.of(pageNumber,pageSize)).stream().map(this::mapTransaction).toList();
         }catch (Exception e){

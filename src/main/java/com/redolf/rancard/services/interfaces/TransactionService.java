@@ -20,5 +20,5 @@ public interface TransactionService<T,U> {
 
     List<U> getAllTransactions();
 
-    List<U> getTransactionsWithAndOffSetPageSize( int offSet,int pageSize);
+    List<U> getTransactionsWithOffSetAndPageSize( int offSet,int pageSize);
 }
