@@ -38,8 +38,6 @@ class TransactionServiceImplTest extends AbstractContainerBaseTest{
     @Autowired
     private TransactionServiceImpl serviceImpl;
 
-
-
     @MockBean
     public TransactionRepository repository;
 
@@ -89,11 +87,44 @@ class TransactionServiceImplTest extends AbstractContainerBaseTest{
     }
 
     @Test
-    void createTransactionWithSomeNullFields() {
+    void createTransactionWithSomeIncorrectData() {
+        Transaction transaction = Transaction.builder()
+                .amount(-1)
+                .sender(null)
+                .receiver("John Snow")
+                .transactionDate(new Date())
+                .build();
+        when(repository.save(transaction)).thenThrow(RuntimeException.class);
+        assertThrows(InvalidTransactionException.class,()-> serviceImpl.createTransaction(mapper.map(transaction,TransactionRequest.class)));
     }
 
     @Test
     void updateTransaction() {
+        int id = 1000;
+        TransactionRequest entity = new TransactionRequest();
+        entity.setAmount(100.0);
+        entity.setSender("sender");
+        entity.setReceiver("receiver");
+
+        Transaction existingTransaction = new Transaction();
+        existingTransaction.setId(id);
+        existingTransaction.setAmount(50.0);
+        existingTransaction.setSender("old sender");
+        existingTransaction.setReceiver("old receiver");
+
+        when(repository.findById(id)).thenReturn(Optional.of(existingTransaction));
+
+        TransactionResponse updatedTransaction = serviceImpl.updateTransaction(id, entity);
+
+        verify(repository).findById(id);
+        verify(repository).save(any(Transaction.class));
+
+        // Verify that the result is as expected
+        assertNotNull(updatedTransaction);
+        assertEquals(id, updatedTransaction.getId());
+        assertEquals(entity.getAmount(), updatedTransaction.getAmount());
+        assertEquals(entity.getSender(), updatedTransaction.getSender());
+        assertEquals(entity.getReceiver(), updatedTransaction.getReceiver());
     }
 
     @Test
