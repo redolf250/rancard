@@ -17,10 +17,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.MapBindingResult;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Date;
 import java.util.List;
@@ -67,9 +63,8 @@ public class TransactionServiceImpl implements TransactionService<TransactionReq
                 Transaction saveEntity = repository.save(transaction);
                 return mapper.map(saveEntity, TransactionResponse.class);
             }
-        }catch (Exception e){
-//            throw new InternalServerErrorException("Oops! something went wrong, try again later.");
-            throw new MethodArgumentException(null,null);
+        }catch (RuntimeException e){
+            throw new InternalServerErrorException("Oops! something went wrong, try again later.");
         }
     }
 
@@ -77,8 +72,8 @@ public class TransactionServiceImpl implements TransactionService<TransactionReq
     /**
      * @param id: The id of the database record to updated.
      * @param entity: The new record for the entity {@link TransactionRequest} to updated.
-     *  @return {@link TransactionResponse} : The operation returns {@link Transaction}
-     *  which is mapped to {@link TransactionResponse}
+     * @return {@link TransactionResponse} : The operation returns {@link Transaction}
+     * which is mapped to {@link TransactionResponse}
      */
     @SneakyThrows
     public TransactionResponse updateTransaction(int id, @Valid TransactionRequest entity) {
