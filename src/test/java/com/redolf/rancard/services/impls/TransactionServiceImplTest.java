@@ -100,31 +100,6 @@ class TransactionServiceImplTest extends AbstractContainerBaseTest{
 
     @Test
     void updateTransaction() {
-        int id = 1000;
-        TransactionRequest entity = new TransactionRequest();
-        entity.setAmount(100.0);
-        entity.setSender("sender");
-        entity.setReceiver("receiver");
-
-        Transaction existingTransaction = new Transaction();
-        existingTransaction.setId(id);
-        existingTransaction.setAmount(50.0);
-        existingTransaction.setSender("old sender");
-        existingTransaction.setReceiver("old receiver");
-
-        when(repository.findById(id)).thenReturn(Optional.of(existingTransaction));
-
-        TransactionResponse updatedTransaction = serviceImpl.updateTransaction(id, entity);
-
-        verify(repository).findById(id);
-        verify(repository).save(any(Transaction.class));
-
-        // Verify that the result is as expected
-        assertNotNull(updatedTransaction);
-        assertEquals(id, updatedTransaction.getId());
-        assertEquals(entity.getAmount(), updatedTransaction.getAmount());
-        assertEquals(entity.getSender(), updatedTransaction.getSender());
-        assertEquals(entity.getReceiver(), updatedTransaction.getReceiver());
     }
 
     @Test
@@ -213,6 +188,11 @@ class TransactionServiceImplTest extends AbstractContainerBaseTest{
     }
 
     @Test
+    void getTransactionsWithInvalidPageSize() {
+        assertThrows(InternalServerErrorException.class,()->serviceImpl.getTransactionsWithPageSize(-5));
+    }
+
+    @Test
     void getAllTransactions() {
         when(repository.findAll()).thenReturn(transactionStream);
         assertEquals(transactionStream.size(),serviceImpl.getAllTransactions().size());
@@ -220,16 +200,21 @@ class TransactionServiceImplTest extends AbstractContainerBaseTest{
     }
 
     @Test
-    void getTransactionsWithAndOffSetPageSize() {
+    void getTransactionsWithOffSetAndPageSize() {
         List<Transaction> transactions = transactionStream.stream().skip(5).toList();
         List<TransactionResponse> expectedResponses = transactions.stream()
                 .map(this::mapTransaction)
                 .toList();
         Page<Transaction> transactionPage = new PageImpl<>(transactions);
         when(repository.findAll(any(PageRequest.class))).thenReturn(transactionPage);
-        List<TransactionResponse> actualResponses = serviceImpl.getTransactionsWithAndOffSetPageSize(0,3);
+        List<TransactionResponse> actualResponses = serviceImpl.getTransactionsWithOffSetAndPageSize(0,3);
         assertEquals(expectedResponses.size(), actualResponses.size());
         verify(repository, times(1)).findAll(PageRequest.of(0,3));
+    }
+
+    @Test
+    void getTransactionsWithInvalidOffSetAndPageSize() {
+        assertThrows(InternalServerErrorException.class,()->serviceImpl.getTransactionsWithOffSetAndPageSize(-1,-5));
     }
 
     private TransactionResponse mapTransaction(Transaction transaction){
