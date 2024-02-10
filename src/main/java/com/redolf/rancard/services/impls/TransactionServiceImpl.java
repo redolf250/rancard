@@ -58,7 +58,7 @@ public class TransactionServiceImpl implements TransactionService<TransactionReq
         try{
             Set<ConstraintViolation<TransactionRequest>> violations = validator.validate(entity);
             if (!violations.isEmpty()) {
-                throw new InvalidTransactionException();
+                throw new InvalidTransactionException("Oops! invalid data provided");
             }else{
                 Transaction saveEntity = repository.save(transaction);
                 return mapper.map(saveEntity, TransactionResponse.class);
