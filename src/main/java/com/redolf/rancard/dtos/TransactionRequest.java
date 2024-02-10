@@ -1,19 +1,18 @@
 package com.redolf.rancard.dtos;
 
-import jakarta.persistence.Entity;
+import jakarta.validation.constraints.*;
 import lombok.*;
-
-import java.util.Date;
 
 @Setter
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransactionDTO {
-    private int id;
+public class TransactionRequest {
+    @NotEmpty(message = "Sender field can't be empty")
     private String sender;
-    private String address;
+    @NotEmpty(message = "Receiver field can't be empty")
+    private String receiver;
+    @DecimalMin(message = "Amount field should be greater than or equal to 1", value = "1.0")
     private  double amount;
-    private Date transactionDate;
 }

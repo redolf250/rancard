@@ -10,7 +10,7 @@ import java.time.ZonedDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransactionNotFoundExceptionPayLoad {
+public class ExceptionPayLoad {
     private HttpStatus httpStatus;
     private ZonedDateTime timeStamp;
     private String message;
